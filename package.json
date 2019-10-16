@@ -1,0 +1,11 @@
+{
+    "name": "Maskbook-Talk",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "@holoflows/kit": "^0.6.1",
+        "jsx-jsonml-devtools-renderer": "^1.4.2",
+        "typescript": "^3.6.4"
+    }
+}
