@@ -5,15 +5,13 @@ MutationObserverWatcher.enhanceDebugger()
 DOMProxy.enhanceDebugger()
 namespace demo {
     export function start() {
-        new demo.JSXRender(
-            (
-                <>
-                    <div style={{ fontSize: '1.5em' }}>演示</div>
-                    <div onClick={() => demo.RunGenerator(demo.LiveSelectorDemo)}>👉 LiveSelector 演示</div>
-                    <div onClick={() => demo.RunGenerator(demo.WatcherDemo)}>👉 Watcher 演示</div>
-                    <div>👉 DOMProxy 演示</div>
-                </>
-            )
-        ).render()
+        JSXRender.render(
+            <>
+                <div style={{ fontSize: '1.5em' }}>演示</div>
+                <div onClick={() => showDemo(LiveSelectorDemo)}>🔎 LiveSelector 演示</div>
+                <div onClick={() => showDemo(WatcherDemo)}>🙈 Watcher 演示</div>
+                <div onClick={() => showDemo(DOMProxyDemo)}>🧙‍♂️ DOMProxy 演示</div>
+            </>
+        )
     }
 }

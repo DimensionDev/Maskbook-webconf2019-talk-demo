@@ -1,24 +1,19 @@
 "use strict";
-/// <reference path="./global.d.ts" />
 var demo;
 (function (demo) {
-    let lastResult = { done: false, value: undefined };
-    let iterator = undefined;
-    function RunGenerator(generator) {
-        if (typeof iterator === 'undefined')
-            iterator = generator();
-        console.clear();
-        lastResult = iterator.next();
-        const back = () => {
-            console.clear();
-            iterator = undefined;
-            demo.start();
-        };
-        new demo.JSXRender((React.createElement(React.Fragment, null,
-            React.createElement("div", { onClick: back }, "\u274C\u8FD4\u56DE\u4E3B\u83DC\u5355"),
-            lastResult.done ? React.createElement("div", null, "\u6F14\u793A\u7ED3\u675F") : React.createElement("div", { onClick: () => RunGenerator(generator) }, "\u23ED\u4E0B\u4E00\u6B65")))).render();
+    function* DOMProxyDemo() {
+        demo.JSXRender.render(React.createElement(React.Fragment, null,
+            "\u5148\u521B\u5EFA\u4E00\u4E2A DOMProxy \u5BF9\u8C61, ",
+            React.createElement("span", { variant: ['bigint'] }, "DOMProxy"),
+            "()",
+            React.createElement("br", null),
+            "\u7136\u540E\u628A\u5B83\u6307\u5411\u67D0\u4E2A\u5143\u7D20"));
+        console.log(DOMProxy());
+        const x = document.createElement('span');
+        x.innerText = '额外内容';
+        console.log('接下来把右边这个元素插入到 DOMProxy 里', x);
     }
-    demo.RunGenerator = RunGenerator;
+    demo.DOMProxyDemo = DOMProxyDemo;
 })(demo || (demo = {}));
 var demo;
 (function (demo) {
@@ -75,7 +70,7 @@ var demo;
     }
     function* WatcherDemo() {
         const mut = new MutationObserverWatcher(demo.getLiveSelector());
-        new demo.JSXRender((React.createElement(React.Fragment, null,
+        demo.JSXRender.render(React.createElement(React.Fragment, null,
             "\u65B0\u5DE5\u5177\uFF1AWatcher",
             React.createElement("br", null),
             "\u7528\u4E8E\u5B9A\u65F6\u5BF9 LiveSelector \u8FDB\u884C\u810F\u68C0\u67E5\uFF0C\u53D1\u73B0 LiveSelector \u9009\u4E2D\u7684\u5185\u5BB9\u53D8\u5316\u4E4B\u540E\u4F1A\u53CA\u65F6\u901A\u77E5",
@@ -86,7 +81,7 @@ var demo;
             ' ',
             React.createElement("span", { onClick: () => prompt('复制此链接：', 'https://mdn.io/MutationObserver'), variant: ['bigint'], style: { textDecoration: 'underline' } }, "MutationObserver"),
             ' ',
-            "\u6765\u89E6\u53D1\u810F\u68C0\u67E5"))).render();
+            "\u6765\u89E6\u53D1\u810F\u68C0\u67E5"));
         mut.omitWarningForForgetWatch();
         yield;
         console.log('先简单看一下用法', eval(watchToList.toString() + ';' + watchToList.name));
@@ -112,6 +107,27 @@ var demo;
     demo.WatcherDemo = WatcherDemo;
 })(demo || (demo = {}));
 /// <reference path="./global.d.ts" />
+var demo;
+(function (demo) {
+    let lastResult = { done: false, value: undefined };
+    let iterator = undefined;
+    function showDemo(generator) {
+        if (typeof iterator === 'undefined')
+            iterator = generator();
+        console.clear();
+        lastResult = iterator.next();
+        const back = () => {
+            console.clear();
+            iterator = undefined;
+            demo.start();
+        };
+        demo.JSXRender.render(React.createElement(React.Fragment, null,
+            React.createElement("div", { onClick: back }, "\u274C\u8FD4\u56DE\u4E3B\u83DC\u5355"),
+            lastResult.done ? React.createElement("div", null, "\u6F14\u793A\u7ED3\u675F") : React.createElement("div", { onClick: () => showDemo(generator) }, "\u23ED\u4E0B\u4E00\u6B65")));
+    }
+    demo.showDemo = showDemo;
+})(demo || (demo = {}));
+/// <reference path="./global.d.ts" />
 const { LiveSelector, MutationObserverWatcher, DOMProxy } = HoloflowsKit;
 LiveSelector.enhanceDebugger();
 MutationObserverWatcher.enhanceDebugger();
@@ -119,11 +135,11 @@ DOMProxy.enhanceDebugger();
 var demo;
 (function (demo) {
     function start() {
-        new demo.JSXRender((React.createElement(React.Fragment, null,
+        demo.JSXRender.render(React.createElement(React.Fragment, null,
             React.createElement("div", { style: { fontSize: '1.5em' } }, "\u6F14\u793A"),
-            React.createElement("div", { onClick: () => demo.RunGenerator(demo.LiveSelectorDemo) }, "\uD83D\uDC49 LiveSelector \u6F14\u793A"),
-            React.createElement("div", { onClick: () => demo.RunGenerator(demo.WatcherDemo) }, "\uD83D\uDC49 Watcher \u6F14\u793A"),
-            React.createElement("div", null, "\uD83D\uDC49 DOMProxy \u6F14\u793A")))).render();
+            React.createElement("div", { onClick: () => demo.showDemo(demo.LiveSelectorDemo) }, "\uD83D\uDD0E LiveSelector \u6F14\u793A"),
+            React.createElement("div", { onClick: () => demo.showDemo(demo.WatcherDemo) }, "\uD83D\uDE48 Watcher \u6F14\u793A"),
+            React.createElement("div", { onClick: () => demo.showDemo(demo.DOMProxyDemo) }, "\uD83E\uDDD9\u200D\u2642\uFE0F DOMProxy \u6F14\u793A")));
     }
     demo.start = start;
 })(demo || (demo = {}));
@@ -135,6 +151,9 @@ var demo;
             this.ui = ui;
             React.installCustomObjectFormatter(this);
         }
+        static render(ui) {
+            console.log(new this(ui));
+        }
         header(obj) {
             if (obj === this)
                 return this.ui;
@@ -145,9 +164,6 @@ var demo;
         }
         body() {
             return React.createElement(React.Fragment, null);
-        }
-        render() {
-            console.log(this);
         }
     }
     demo.JSXRender = JSXRender;

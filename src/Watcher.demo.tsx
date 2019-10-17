@@ -1,6 +1,6 @@
 namespace demo {
     function watchToList() {
-        new MutationObserverWatcher(demo.getLiveSelector())
+        new MutationObserverWatcher(getLiveSelector())
             .useForeach(dom => {
                 let oldText = dom.innerText
                 console.log('发现新元素', oldText)
@@ -14,26 +14,24 @@ namespace demo {
             .startWatch({ subtree: true, characterData: true, childList: true })
     }
     export function* WatcherDemo() {
-        const mut = new MutationObserverWatcher(demo.getLiveSelector())
-        new demo.JSXRender(
-            (
-                <>
-                    新工具：Watcher
-                    <br />
-                    用于定时对 LiveSelector 进行脏检查，发现 LiveSelector 选中的内容变化之后会及时通知
-                    <br />
-                    这里演示 Watcher 的一个子类 {mut}，它基于{' '}
-                    <span
-                        onClick={() => prompt('复制此链接：', 'https://mdn.io/MutationObserver')}
-                        variant={['bigint']}
-                        style={{ textDecoration: 'underline' }}
-                    >
-                        MutationObserver
-                    </span>{' '}
-                    来触发脏检查
-                </>
-            )
-        ).render()
+        const mut = new MutationObserverWatcher(getLiveSelector())
+        JSXRender.render(
+            <>
+                新工具：Watcher
+                <br />
+                用于定时对 LiveSelector 进行脏检查，发现 LiveSelector 选中的内容变化之后会及时通知
+                <br />
+                这里演示 Watcher 的一个子类 {mut}，它基于{' '}
+                <span
+                    onClick={() => prompt('复制此链接：', 'https://mdn.io/MutationObserver')}
+                    variant={['bigint']}
+                    style={{ textDecoration: 'underline' }}
+                >
+                    MutationObserver
+                </span>{' '}
+                来触发脏检查
+            </>
+        )
         mut.omitWarningForForgetWatch()
         yield
 
