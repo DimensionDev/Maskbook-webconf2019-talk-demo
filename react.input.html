@@ -1,0 +1,37 @@
+<meta charset="utf-8" />
+<script src="immutable.min.js"></script>
+<script src="input.hack.js"></script>
+<script src="react.development.js"></script>
+<script src="react-dom.development.js"></script>
+<script src="Draft.min.js"></script>
+
+<body>
+    <h1>Draft.js hack</h1>
+    <div id="draft" style="border: 1px solid red;"></div>
+    <h1>Raw input element hack</h1>
+    <div id="app"></div>
+</body>
+<script>
+    const $ = React.createElement
+    function SimpleInput() {
+        const [value, setState] = React.useState('')
+        return [
+            value,
+            $('br', { key: 'br' }),
+            $('input', {
+                onChange: e => setState(e.currentTarget.value),
+                value,
+                key: 'input'
+            })
+        ]
+    }
+
+    function Editor() {
+        const [editorState, onChange] = React.useState(Draft.EditorState.createEmpty())
+        console.log('editor updated', Object.values(editorState.toJS().currentContent.blockMap).map(x => x.text))
+
+        return $(Draft.Editor, { editorState, onChange })
+    }
+    ReactDOM.render($(SimpleInput), document.querySelector('#app'))
+    ReactDOM.render($(Editor), document.querySelector('#draft'))
+</script>

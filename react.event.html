@@ -1,0 +1,27 @@
+<script src="react.development.js"></script>
+<script src="react-dom.development.js"></script>
+
+<body>
+    <div id="1"></div>
+    <div id="2"></div>
+</body>
+<script>
+    function Component() {
+        return React.createElement(
+            'h1',
+            {
+                onClick() {
+                    alert('click!')
+                }
+            },
+            'Click me!'
+        )
+    }
+    const shadow1 = document.getElementById('1').attachShadow({ mode: 'closed' })
+    const shadow2 = document.getElementById('2').attachShadow({ mode: 'closed' })
+    const inner = document.createElement('div')
+    shadow2.appendChild(inner)
+
+    ReactDOM.render(React.createElement(Component), shadow1)
+    ReactDOM.render(React.createElement(Component), inner)
+</script>
