@@ -17,11 +17,39 @@
             'Click me!'
         )
     }
-    const shadow1 = document.getElementById('1').attachShadow({ mode: 'closed' })
+    const shadow1 = document.getElementById('1').attachShadow({ mode: 'open' })
     const shadow2 = document.getElementById('2').attachShadow({ mode: 'closed' })
     const inner = document.createElement('div')
     shadow2.appendChild(inner)
 
     ReactDOM.render(React.createElement(Component), shadow1)
     ReactDOM.render(React.createElement(Component), inner)
+</script>
+
+<script>
+    // ? Hack for React, let event go through ShadowDom
+    const hackingEvents = new WeakMap()
+    function hack(eventName, shadowRoot) {
+        shadowRoot.addEventListener(eventName, e => {
+            if (hackingEvents.has(e)) return
+            const path = e.composedPath()
+            var e2 = new e.constructor(e.type, e)
+            hackingEvents.set(e2, path)
+            shadowRoot.dispatchEvent(e2)
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+        })
+    }
+    // call hack with parameter1 = Event name you want to make it work with ShadowRoot
+    // parameter2 = the shadow root
+    function fix() {
+        hack('click', shadow2)
+    }
+    var nativeTarget = Object.getOwnPropertyDescriptor(Event.prototype, 'target').get
+    Object.defineProperty(Event.prototype, 'target', {
+        get() {
+            if (hackingEvents.has(this)) return hackingEvents.get(this)[0]
+            return nativeTarget.call(this)
+        }
+    })
 </script>
